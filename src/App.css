@@ -1,0 +1,37 @@
+body { margin: 0; background: #f5f7fb; font-family: Arial; }
+
+.nav {
+  background: white;
+  padding: 15px 20px;
+  display: flex;
+  justify-content: space-between;
+  box-shadow: 0 2px 5px #0001;
+}
+
+.nav a { margin-right: 15px; text-decoration: none; font-weight: bold; }
+
+.main {
+  padding: 30px;
+}
+
+.form-card, .home-card {
+  background: white;
+  width: 350px;
+  margin: auto;
+  padding: 25px;
+  border-radius: 10px;
+  box-shadow: 0 2px 10px #0001;
+}
+
+input, button {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 12px;
+}
+
+button {
+  background: #008cff;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
