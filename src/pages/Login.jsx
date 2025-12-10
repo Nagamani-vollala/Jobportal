@@ -1,50 +1,87 @@
-import React, { useState, useContext } from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { AuthContext } from "../contexts/AuthContext.jsx";
+import axios from "axios";
+
 
 export default function Login() {
   const navigate = useNavigate();
-  const { login } = useContext(AuthContext);
-  const [role, setRole] = useState("student");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [form, setForm] = useState({ email: "", password: "" });
+  const [showPassword, setShowPassword] = useState(false);
 
-  const handleLogin = (e) => {
+  const handleChange = (e) =>
+    setForm({ ...form, [e.target.name]: e.target.value });
+
+  const handleLogin = async (e) => {
     e.preventDefault();
-    login(email, password);
-    
-    // reset fields
-    setEmail("");
-    setPassword("");
-    setRole("student");
+    try {
+      // 🔥 Correct Backend URL
+      const res = await axios.post(
+        "http://localhost:5000/api/login",
+        form
+      );
 
-    navigate("/dashboard");
+      if (res.data.success) {
+        localStorage.setItem("user", JSON.stringify(res.data.user));
+        alert("Login Successful!");
+
+        // Role-based redirect
+        if (res.data.user.role === "recruiter") {
+          navigate("/recruiter-dashboard");
+        } else {
+          navigate("/student-dashboard");
+        }
+      } else {
+        alert("Login Failed: " + res.data.message);
+      }
+    } catch (err) {
+      alert("Network Error: " + (err.response?.data?.message || err.message));
+    }
   };
 
   return (
     <div className="form-container">
-      <h2 className="form-title">Login</h2>
-
       <form onSubmit={handleLogin} className="form">
+        <h2 className="form-title">Login</h2>
+
         <label>Email</label>
-        <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
+        <input
+          type="email"
+          name="email"
+          value={form.email}
+          onChange={handleChange}
+          required
+        />
 
         <label>Password</label>
-        <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
-
-        <div className="role-box">
-          <label>
-            <input type="radio" value="student" checked={role === "student"} onChange={() => setRole("student")} />
-            Student
-          </label>
-
-          <label>
-            <input type="radio" value="recruiter" checked={role === "recruiter"} onChange={() => setRole("recruiter")} />
-            Recruiter
-          </label>
+        <div className="password-input">
+          <input
+            type={showPassword ? "text" : "password"}
+            name="password"
+            value={form.password}
+            onChange={handleChange}
+            required
+          />
+          <span
+            onClick={() => setShowPassword(!showPassword)}
+            style={{ cursor: "pointer", marginLeft: "5px" }}
+          >
+            {showPassword ? "Hide" : "Show"}
+          </span>
         </div>
 
-        <button type="submit" className="btn register-btn">Login</button>
+        <button type="submit" className="btn login-btn">
+          Login
+        </button>
+
+        <p className="signup-link">
+          Don't have an account?{" "}
+          <span
+            onClick={() => navigate("/register")}
+            style={{ cursor: "pointer", color: "blue" }}
+          >
+            Register
+          </span>
+        </p>
       </form>
     </div>
   );

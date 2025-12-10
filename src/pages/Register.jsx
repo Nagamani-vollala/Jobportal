@@ -43,21 +43,27 @@ export default function Register() {
         alert("Failed to send OTP");
       }
     } catch (err) {
+      console.error(err);
       alert("Error sending OTP");
     }
   };
 
-  // 👉 VERIFY OTP
+  // 👉 VERIFY OTP + REGISTER USER
   const verifyOtp = async () => {
     try {
       const res = await axios.post("http://localhost:5000/api/verify-otp", {
         email: form.email,
         otp,
+        name: form.name,
+        contact: form.contact,
+        password: form.password,
+        role,
+        designation: form.designation,
+        company: form.company,
       });
 
       if (res.data.success) {
         alert("Registration Successful!");
-
         // Reset form
         setForm({
           name: "",
@@ -73,16 +79,16 @@ export default function Register() {
 
         navigate("/login");
       } else {
-        alert("Invalid OTP");
+        alert(res.data.message || "Invalid OTP");
       }
     } catch (err) {
+      console.error(err);
       alert("Error verifying OTP");
     }
   };
 
   return (
     <div className="form-container">
-
       {/* ------------------- STEP 1 : REGISTER FORM ------------------- */}
       {step === 1 && (
         <form onSubmit={sendOtp} className="form">
